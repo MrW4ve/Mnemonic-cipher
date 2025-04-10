@@ -21,6 +21,9 @@ def encode_data(input_data):
     # Generate a mnemonic phrase for each chunk
     mnemonic_phrases = [mnemo.to_mnemonic(chunk) for chunk in chunks]
     print("Mnemonic Phrases:", mnemonic_phrases)
+    # Print the entropy data in binary for each chunk
+    for chunk in chunks:
+        print("Entropy (binary):", ''.join(format(byte, '08b') for byte in chunk))
     return mnemonic_phrases
 
 def decode_data(mnemonic_phrases):
