@@ -40,13 +40,37 @@ def vigenere_cipher_decrypt(text, key):
 
     return decrypted_text
 
+def binary_xor_encrypt(data, keyword):
+    """
+    Encrypts the data at the binary level using XOR with the keyword.
+    """
+    keyword_bytes = keyword.encode()  # Convert the keyword to bytes
+    encrypted_data = bytearray()
+
+    for i, byte in enumerate(data):
+        # XOR each byte of the data with the corresponding byte of the keyword (cyclically)
+        encrypted_data.append(byte ^ keyword_bytes[i % len(keyword_bytes)])
+
+    return bytes(encrypted_data)
+
+def binary_xor_decrypt(data, keyword):
+    """
+    Decrypts the data at the binary level using XOR with the keyword.
+    (Encryption and decryption are symmetric for XOR.)
+    """
+    return binary_xor_encrypt(data, keyword)  # XOR decryption is the same as encryption
+
 def encode_data(input_data, keyword):
     # Encrypt the input data using Vigenère Cipher
     encrypted_data = vigenere_cipher_encrypt(input_data, keyword)
-    print("Encrypted Data:", encrypted_data)
+    print("Encrypted Data (Vigenère):", encrypted_data)
 
     # Convert the encrypted data to bytes
     data_bytes = encrypted_data.encode()
+
+    # Further encrypt the data at the binary level using XOR
+    binary_encrypted_data = binary_xor_encrypt(data_bytes, keyword)
+    print("Binary Encrypted Data:", binary_encrypted_data)
 
     mnemo = mnemonic.Mnemonic("english")
 
@@ -55,10 +79,10 @@ def encode_data(input_data, keyword):
     chunks = []
     i = 0
 
-    while i < len(data_bytes):
+    while i < len(binary_encrypted_data):
         # Randomly select a valid chunk size
         chunk_size = random.choice(valid_lengths)
-        chunks.append(data_bytes[i:i + chunk_size])
+        chunks.append(binary_encrypted_data[i:i + chunk_size])
         i += chunk_size
 
     # Pad the last chunk if necessary
@@ -84,10 +108,14 @@ def decode_data(mnemonic_phrases, keyword):
 
     # Decode each mnemonic phrase back to the original data
     decoded_chunks = [mnemo.to_entropy(phrase) for phrase in mnemonic_phrases]
-    decoded_data = b''.join(decoded_chunks).rstrip(b'\x00').decode()  # Remove padding
+    binary_encrypted_data = b''.join(decoded_chunks).rstrip(b'\x00')  # Remove padding
+
+    # Decrypt the data at the binary level using XOR
+    data_bytes = binary_xor_decrypt(binary_encrypted_data, keyword)
+    print("Binary Decrypted Data:", data_bytes)
 
     # Decrypt the data using Vigenère Cipher
-    decrypted_data = vigenere_cipher_decrypt(decoded_data, keyword)
+    decrypted_data = vigenere_cipher_decrypt(data_bytes.decode(), keyword)
     print("Decrypted Data:", decrypted_data)
 
     # Copy the decrypted data to the clipboard
@@ -100,11 +128,11 @@ choice = input("Do you want to encode or decode? (e/d): ").strip().lower()
 
 if choice == 'e':
     input_data = input("Enter the data to encode: ")
-    keyword = input("Enter the keyword for Vigenère Cipher: ")
+    keyword = input("Enter the keyword for the cipher: ")
     encode_data(input_data, keyword)
 elif choice == 'd':
     mnemonic_phrases = input("Enter the mnemonic phrases separated by commas: ").split(',')
-    keyword = input("Enter the keyword for Vigenère Cipher: ")
+    keyword = input("Enter the keyword for the cipher: ")
     decode_data(mnemonic_phrases, keyword)
 else:
     print("Invalid choice. Please enter 'e' to encode or 'd' to decode.")
