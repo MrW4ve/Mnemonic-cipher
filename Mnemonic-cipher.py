@@ -1,7 +1,7 @@
 import mnemonic  # Install using `pip install mnemonic`
 
 # Input data to encode
-input_data = ("This is a test string for mnemonic encoding. ")
+input_data = input("Enter the data to encode: ")
 
 # Convert the input data to bytes
 data_bytes = input_data.encode()
