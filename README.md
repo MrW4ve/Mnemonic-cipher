@@ -2,6 +2,10 @@
 
 A Python-based encryption and decryption tool that encodes text into BIP-39 mnemonic phrases using a combination of cryptographic techniques. This project supports encoding data with a Vigenère Cipher, binary XOR encryption, and Base64 encoding, while also splitting the data into randomized BIP-39-compatible chunks for added obscurity.
 
+This is intended as a personal educational project and does not use any high-level standardized strong encryption methods.
+
+Mnemonic phrases can be decoded to binary data by anyone and are not a secure method of obscuring data. However, this tool could be used as a way to format encrypted data in a human-readable and easier-to-memorize way. It could also obscure data by making it less recognizable or serve as a red herring, as mnemonic phrases are most commonly associated with cryptocurrency wallets.
+
 ## Features
 
 - **Vigenère Cipher**: Encrypts text using a keyword-based substitution cipher.
